@@ -1,0 +1,29 @@
+# Use Python 3.12 on Debian bookworm
+FROM python:3.12-trixie
+
+# Set working directory
+WORKDIR /app
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+# Copy dependency files first for better Docker layer caching
+COPY pyproject.toml uv.lock ./
+
+# Install dependencies into a virtual environment
+# uv sync creates .venv and installs packages into it
+RUN uv sync --frozen --no-dev
+
+# Copy application code
+COPY . .
+
+# Add the virtual environment to PATH
+# This makes Python and installed packages available without activation
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Expose the port FastAPI will run on
+EXPOSE 8000
+
+# Development command with hot reload
+# Because .venv/bin is in PATH, this finds the uvicorn from the virtual environment
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
