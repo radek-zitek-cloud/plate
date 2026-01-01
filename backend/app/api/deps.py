@@ -1,8 +1,8 @@
 from typing import AsyncGenerator, Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-import jwt
-from jwt.exceptions import InvalidTokenError
+from jose import jwt
+from jose.exceptions import JWTError
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -68,7 +68,7 @@ async def get_current_user(
         if user_id is None:
             raise credentials_exception
         token_data = TokenPayload(sub=user_id)
-    except InvalidTokenError:
+    except JWTError:
         raise credentials_exception
     
     # Get the user from database

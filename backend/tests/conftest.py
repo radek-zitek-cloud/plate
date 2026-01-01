@@ -1,17 +1,30 @@
 import asyncio
+import sys
+from pathlib import Path
 from typing import AsyncGenerator
 
-import pytest
-from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+# Add the backend directory to Python path
+backend_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(backend_dir))
 
-from app.core.config import settings
+import pytest
+from httpx import AsyncClient, ASGITransport
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.pool import NullPool
+
 from app.core.database import Base
 from app.main import app
 from app.api.deps import get_db
 
-# Create test engine
-test_engine = create_async_engine(settings.DATABASE_URL, echo=True)
+# Use test database URL
+TEST_DATABASE_URL = "postgresql+asyncpg://test_user:test_password@localhost:5433/test_db"
+
+# Create test engine with proper pool settings
+test_engine = create_async_engine(
+    TEST_DATABASE_URL, 
+    echo=False,  # Disable SQL logging for cleaner test output
+    poolclass=NullPool  # Use NullPool to avoid connection issues between tests
+)
 TestingSessionLocal = async_sessionmaker(
     test_engine, class_=AsyncSession, expire_on_commit=False
 )
@@ -60,7 +73,7 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     
     app.dependency_overrides[get_db] = override_get_db
     
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
     
     app.dependency_overrides.clear()
