@@ -31,6 +31,34 @@ Changes that MUST be documented:
 
 ## [Unreleased]
 
+### Added - 2026-01-02
+
+#### Railway.app Deployment Preparation
+- **Railway Deployment Guide** (`docs/RAILWAY_DEPLOYMENT.md`):
+  - Comprehensive step-by-step deployment instructions for Railway.app
+  - Environment variable configuration reference
+  - Service setup for backend, frontend, PostgreSQL, and Redis
+  - Custom domain configuration
+  - Monitoring and logging setup
+  - Troubleshooting guide with common issues and solutions
+  - Cost optimization tips
+  - Security best practices
+  - Railway CLI commands reference
+  - Post-deployment checklist
+
+- **Production Dockerfiles Updated for Railway**:
+  - `backend/Dockerfile`: Updated to use `PORT` environment variable (Railway requirement)
+  - Configurable workers via `WORKERS` environment variable (default: 4)
+  - Health check updated to use httpx instead of requests
+  - Health check uses dynamic PORT from environment
+  - Shell-based CMD for environment variable interpolation
+
+- **Documentation Updates**:
+  - Updated main `README.md` with "Deploy to Railway" section
+  - Added Railway deployment to documentation index (`docs/README.md`)
+  - Quick start guide for Railway deployment in main README
+  - Links to detailed Railway deployment guide throughout documentation
+
 ### Changed - 2026-01-02
 
 #### Documentation Consolidation

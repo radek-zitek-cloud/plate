@@ -201,22 +201,48 @@ make test-watch     # Run tests with file watching
 
 ## Production Deployment
 
-### Build Production Images
+### Deploy to Railway (Recommended)
+
+This project is optimized for deployment on [Railway.app](https://railway.app), which provides:
+- Managed PostgreSQL and Redis
+- Automatic SSL/TLS certificates
+- Zero-downtime deployments
+- Automatic health checks and rollbacks
+- Built-in monitoring and logging
+
+**Quick Start**:
+1. Push your repository to GitHub
+2. Create a Railway account at [railway.app](https://railway.app)
+3. Click "Deploy from GitHub repo"
+4. Add PostgreSQL and Redis databases
+5. Configure environment variables
+6. Railway automatically deploys!
+
+**Detailed Guide**: See [docs/RAILWAY_DEPLOYMENT.md](./docs/RAILWAY_DEPLOYMENT.md) for:
+- Step-by-step setup instructions
+- Environment variable configuration
+- Custom domain setup
+- Monitoring and troubleshooting
+- Cost optimization tips
+
+### Manual Docker Deployment
+
+For self-hosting or other platforms:
+
+**Build Production Images**:
 ```bash
-docker compose -f docker-compose.prod.yml build
+# Backend
+cd backend && docker build -t backend-prod .
+
+# Frontend
+cd frontend && docker build -t frontend-prod .
 ```
 
-### Frontend Production
-- Built with Vite
-- Served by Nginx
-- Gzip compression enabled
-- Security headers configured
-- SPA routing configured
+**Production Features**:
+- **Backend**: Multi-stage build, optimized Python image, configurable workers, health checks
+- **Frontend**: Vite build, Nginx server, Gzip compression, security headers, SPA routing
 
-### Backend Production
-- Uses `Dockerfile` (not `Dockerfile.dev`)
-- Optimized Python image
-- Production-ready configuration
+See [docs/Environment-Architecture.md](./docs/Environment-Architecture.md) for detailed infrastructure information.
 
 ## Technology Stack
 
@@ -250,6 +276,7 @@ All project documentation is located in the [`docs/`](./docs) directory:
 
 - **[docs/README.md](./docs/README.md)** - Documentation index and navigation guide
 - **[docs/CLAUDE.md](./docs/CLAUDE.md)** - Comprehensive development guide and architecture
+- **[docs/RAILWAY_DEPLOYMENT.md](./docs/RAILWAY_DEPLOYMENT.md)** - Railway.app deployment guide
 - **[docs/CHANGELOG.md](./docs/CHANGELOG.md)** - Complete project history and changes
 - **[docs/FRONTEND_TESTING.md](./docs/FRONTEND_TESTING.md)** - Frontend testing guide
 - **[docs/BACKEND_TESTING.md](./docs/BACKEND_TESTING.md)** - Backend testing guide

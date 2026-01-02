@@ -23,6 +23,12 @@ This directory contains all project documentation. All documentation has been co
   - Docker setup and configuration
   - Environment variable management
 
+- **[RAILWAY_DEPLOYMENT.md](./RAILWAY_DEPLOYMENT.md)** - Railway.app deployment guide
+  - Step-by-step deployment instructions
+  - Environment variable configuration
+  - Troubleshooting and monitoring
+  - Cost optimization tips
+
 ### Testing
 - **[FRONTEND_TESTING.md](./FRONTEND_TESTING.md)** - Frontend testing guide
   - Vitest and React Testing Library setup
@@ -66,6 +72,7 @@ docs/
 ├── CLAUDE.md                    # AI assistant guide and project overview
 ├── CHANGELOG.md                 # Complete change history (REQUIRED to update)
 ├── Environment-Architecture.md  # Infrastructure and deployment guide
+├── RAILWAY_DEPLOYMENT.md        # Railway.app deployment guide
 ├── FRONTEND.md                  # Frontend architecture and development
 ├── FRONTEND_TESTING.md          # Frontend testing guide
 └── BACKEND_TESTING.md           # Backend testing guide
@@ -91,7 +98,8 @@ When adding or modifying documentation:
 | Write tests | [FRONTEND_TESTING.md](./FRONTEND_TESTING.md), [BACKEND_TESTING.md](./BACKEND_TESTING.md) |
 | See what changed | [CHANGELOG.md](./CHANGELOG.md) |
 | Understand security | [CLAUDE.md - Security section](./CLAUDE.md#security) |
-| Deploy the app | [Environment-Architecture.md](./Environment-Architecture.md) |
+| Deploy to Railway | [RAILWAY_DEPLOYMENT.md](./RAILWAY_DEPLOYMENT.md) |
+| Understand environments | [Environment-Architecture.md](./Environment-Architecture.md) |
 | Work on frontend | [FRONTEND.md](./FRONTEND.md) |
 
 ## Questions?
