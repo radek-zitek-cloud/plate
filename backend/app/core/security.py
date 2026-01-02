@@ -8,22 +8,24 @@ from app.core.config import settings
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def create_access_token(subject: str | Any, expires_delta: timedelta | None = None) -> str:
+def create_access_token(
+    subject: str | Any, expires_delta: timedelta | None = None
+) -> str:
     now = datetime.now(timezone.utc)
     if expires_delta:
         expire = now + expires_delta
     else:
-        expire = now + timedelta(
-            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-        )
+        expire = now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     to_encode = {
         "exp": expire,
         "iat": now,  # Issued at timestamp
         "sub": str(subject),
-        "jti": str(uuid.uuid4())  # JWT ID for token tracking/revocation
+        "jti": str(uuid.uuid4()),  # JWT ID for token tracking/revocation
     }
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    encoded_jwt = jwt.encode(
+        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
     return encoded_jwt
 
 

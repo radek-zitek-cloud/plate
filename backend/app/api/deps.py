@@ -19,10 +19,10 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_PREFIX}/auth/lo
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
     Dependency that provides a database session.
-    
+
     This is what you'll inject into every endpoint that needs database access.
     The session is automatically created, used, and cleaned up.
-    
+
     Usage in endpoint:
         async def some_endpoint(db: AsyncSession = Depends(get_db)):
             # use db here
@@ -40,14 +40,14 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 async def get_current_user(
     db: Annotated[AsyncSession, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)]
+    token: Annotated[str, Depends(oauth2_scheme)],
 ) -> User:
     """
     Dependency that validates JWT token and returns the current user.
-    
+
     This is how you protect endpoints - if the token is invalid or the user
     doesn't exist, this raises an HTTP 401 error automatically.
-    
+
     Usage in endpoint:
         async def protected_endpoint(current_user: User = Depends(get_current_user)):
             # current_user is guaranteed to be valid here
@@ -57,7 +57,7 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     try:
         # Decode the JWT token
         payload = jwt.decode(
@@ -69,24 +69,24 @@ async def get_current_user(
         token_data = TokenPayload(sub=user_id)
     except JWTError:
         raise credentials_exception
-    
+
     # Get the user from database
     user = await crud.user.get(db, id=int(token_data.sub))
     if not user:
         raise credentials_exception
-    
+
     return user
 
 
 async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)]
+    current_user: Annotated[User, Depends(get_current_user)],
 ) -> User:
     """
     Dependency that ensures the current user is active.
-    
+
     This builds on get_current_user - it first validates the token,
     then also checks if the user account is active.
-    
+
     This is dependency chaining - get_current_active_user depends on
     get_current_user, which depends on get_db and oauth2_scheme.
     """
@@ -96,11 +96,11 @@ async def get_current_active_user(
 
 
 async def get_current_superuser(
-    current_user: Annotated[User, Depends(get_current_user)]
+    current_user: Annotated[User, Depends(get_current_user)],
 ) -> User:
     """
     Dependency for admin-only endpoints.
-    
+
     Ensures the user is authenticated AND is a superuser.
     """
     if not current_user.is_superuser:

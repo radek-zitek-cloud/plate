@@ -37,22 +37,28 @@ async def lifespan(app: FastAPI):
             cwd=project_root,
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
 
         logger.info("✓ Database migrations completed successfully")
         if result.stdout:
-            for line in result.stdout.strip().split('\n'):
+            for line in result.stdout.strip().split("\n"):
                 logger.info(f"  {line}")
 
     except subprocess.CalledProcessError as e:
         logger.error("✗ Database migration failed!")
         logger.error(f"Error: {e.stderr}")
-        logger.warning("Application will continue to start, but database may be out of sync.")
-        logger.warning("Please run migrations manually: docker compose exec backend alembic upgrade head")
+        logger.warning(
+            "Application will continue to start, but database may be out of sync."
+        )
+        logger.warning(
+            "Please run migrations manually: docker compose exec backend alembic upgrade head"
+        )
     except Exception as e:
         logger.error(f"✗ Unexpected error during migration: {e}")
-        logger.warning("Application will continue to start, but database may be out of sync.")
+        logger.warning(
+            "Application will continue to start, but database may be out of sync."
+        )
 
     yield  # Application runs
 

@@ -12,29 +12,25 @@ from app.core.password_validator import validate_password_or_raise
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     """
     CRUD operations for User model.
-    
+
     Inherits all the basic CRUD operations from CRUDBase.
     We only need to add user-specific operations here.
     """
-    
+
     async def get_by_email(self, db: AsyncSession, email: str) -> Optional[User]:
         """
         User-specific operation: find user by email.
-        
+
         This is unique to User - not every model needs email lookup.
         """
-        result = await db.execute(
-            select(User).where(User.email == email)
-        )
+        result = await db.execute(select(User).where(User.email == email))
         return result.scalar_one_or_none()
 
     async def get_by_username(self, db: AsyncSession, username: str) -> Optional[User]:
         """
         User-specific operation: find user by username.
         """
-        result = await db.execute(
-            select(User).where(User.username == username)
-        )
+        result = await db.execute(select(User).where(User.username == username))
         return result.scalar_one_or_none()
 
     async def create(self, db: AsyncSession, obj_in: UserCreate) -> User:
@@ -60,9 +56,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         await db.refresh(db_obj)
         return db_obj
 
-    async def update(
-        self, db: AsyncSession, db_obj: User, obj_in: UserUpdate
-    ) -> User:
+    async def update(self, db: AsyncSession, db_obj: User, obj_in: UserUpdate) -> User:
         """
         Override update to handle password hashing if password is being updated.
         """
@@ -83,7 +77,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     ) -> Optional[User]:
         """
         User-specific operation: authenticate with email and password.
-        
+
         This combines get_by_email with password verification.
         """
         user = await self.get_by_email(db, email=email)

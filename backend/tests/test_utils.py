@@ -1,6 +1,7 @@
 """
 Additional test fixtures and utilities.
 """
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,7 +17,7 @@ def user_data_factory(
     username: str = "testuser",
     password: str = "TestPassword123",  # Updated to meet validation requirements
     is_active: bool = True,
-    is_superuser: bool = False
+    is_superuser: bool = False,
 ) -> dict:
     """Factory for creating user test data."""
     return {
@@ -24,7 +25,7 @@ def user_data_factory(
         "username": username,
         "password": password,
         "is_active": is_active,
-        "is_superuser": is_superuser
+        "is_superuser": is_superuser,
     }
 
 
@@ -35,7 +36,7 @@ async def create_test_user(
     username: str = "testuser",
     password: str = "TestPassword123",  # Updated to meet validation requirements
     is_active: bool = True,
-    is_superuser: bool = False
+    is_superuser: bool = False,
 ):
     """Helper to create a test user."""
     user_in = UserCreate(
@@ -43,23 +44,19 @@ async def create_test_user(
         username=username,
         password=password,
         is_active=is_active,
-        is_superuser=is_superuser
+        is_superuser=is_superuser,
     )
     return await crud.user.create(db, obj_in=user_in)
 
 
-async def get_user_token(
-    client: AsyncClient,
-    email: str,
-    password: str
-) -> str:
+async def get_user_token(client: AsyncClient, email: str, password: str) -> str:
     """Helper to get authentication token for a user."""
     response = await client.post(
         f"{settings.API_V1_PREFIX}/auth/login",
         data={
             "username": email,  # OAuth2 uses 'username' field
-            "password": password
-        }
+            "password": password,
+        },
     )
     return response.json()["access_token"]
 
@@ -72,7 +69,7 @@ async def test_user(db_session: AsyncSession):
         db_session,
         email="testuser@example.com",
         username="testuser",
-        password="testpassword123"
+        password="testpassword123",
     )
 
 
@@ -84,7 +81,7 @@ async def test_superuser(db_session: AsyncSession):
         email="testsuperuser@example.com",
         username="testsuperuser",
         password="testpassword123",
-        is_superuser=True
+        is_superuser=True,
     )
 
 
@@ -96,7 +93,7 @@ async def inactive_user(db_session: AsyncSession):
         email="inactive@example.com",
         username="inactiveuser",
         password="testpassword123",
-        is_active=False
+        is_active=False,
     )
 
 
@@ -104,9 +101,7 @@ async def inactive_user(db_session: AsyncSession):
 async def test_user_token(client: AsyncClient, test_user) -> str:
     """Get authentication token for test user."""
     return await get_user_token(
-        client,
-        email="testuser@example.com",
-        password="testpassword123"
+        client, email="testuser@example.com", password="testpassword123"
     )
 
 
@@ -114,9 +109,7 @@ async def test_user_token(client: AsyncClient, test_user) -> str:
 async def test_superuser_token(client: AsyncClient, test_superuser) -> str:
     """Get authentication token for test superuser."""
     return await get_user_token(
-        client,
-        email="testsuperuser@example.com",
-        password="testpassword123"
+        client, email="testsuperuser@example.com", password="testpassword123"
     )
 
 
@@ -129,7 +122,7 @@ async def multiple_users(db_session: AsyncSession):
             db_session,
             email=f"user{i}@example.com",
             username=f"user{i}",
-            password="testpassword123"
+            password="testpassword123",
         )
         users.append(user)
     return users
@@ -166,40 +159,31 @@ def assert_error_response(data: dict, expected_status: int):
 # Test data generators
 class UserTestData:
     """Collection of test user data."""
-    
+
     VALID_USER = {
         "email": "valid@example.com",
         "username": "validuser",
-        "password": "validpassword123"
+        "password": "validpassword123",
     }
-    
+
     VALID_SUPERUSER = {
         "email": "admin@example.com",
         "username": "adminuser",
         "password": "adminpassword123",
-        "is_superuser": True
+        "is_superuser": True,
     }
-    
+
     INVALID_EMAIL = {
         "email": "not-an-email",
         "username": "testuser",
-        "password": "password123"
+        "password": "password123",
     }
-    
-    MISSING_PASSWORD = {
-        "email": "test@example.com",
-        "username": "testuser"
-    }
-    
-    MISSING_EMAIL = {
-        "username": "testuser",
-        "password": "password123"
-    }
-    
-    MISSING_USERNAME = {
-        "email": "test@example.com",
-        "password": "password123"
-    }
+
+    MISSING_PASSWORD = {"email": "test@example.com", "username": "testuser"}
+
+    MISSING_EMAIL = {"username": "testuser", "password": "password123"}
+
+    MISSING_USERNAME = {"email": "test@example.com", "password": "password123"}
 
 
 # Parametrized test data

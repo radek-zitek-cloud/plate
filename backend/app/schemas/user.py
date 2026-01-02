@@ -30,7 +30,7 @@ class UserInDBBase(UserBase):
     id: int
     created_at: datetime
     updated_at: datetime
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -46,16 +46,19 @@ class UserInDB(UserInDBBase):
 
 class Token(BaseModel):
     """Response schema for login endpoint."""
+
     access_token: str
     token_type: str
 
 
 class TokenPayload(BaseModel):
     """Data structure of JWT token payload."""
+
     sub: str | None = None  # subject - typically user ID
 
 
 class PasswordChange(BaseModel):
     """Schema for password change request."""
+
     current_password: str
     new_password: str

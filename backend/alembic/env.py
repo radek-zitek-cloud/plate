@@ -14,8 +14,8 @@ sys.path.append(str(Path(__file__).resolve().parents[2]))
 
 from app.core.config import settings
 from app.core.database import Base
+
 # Import all models here so Alembic can see them
-from app.models import User  # Add more model imports as you create them
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

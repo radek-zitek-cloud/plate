@@ -10,6 +10,7 @@ from typing import List
 
 class PasswordValidationError(Exception):
     """Raised when password doesn't meet security requirements."""
+
     pass
 
 
@@ -34,13 +35,13 @@ def validate_password(password: str) -> List[str]:
     if len(password) < 8:
         errors.append("Password must be at least 8 characters long")
 
-    if not re.search(r'[A-Z]', password):
+    if not re.search(r"[A-Z]", password):
         errors.append("Password must contain at least one uppercase letter")
 
-    if not re.search(r'[a-z]', password):
+    if not re.search(r"[a-z]", password):
         errors.append("Password must contain at least one lowercase letter")
 
-    if not re.search(r'\d', password):
+    if not re.search(r"\d", password):
         errors.append("Password must contain at least one number")
 
     return errors

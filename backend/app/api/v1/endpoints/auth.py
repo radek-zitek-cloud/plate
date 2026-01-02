@@ -22,20 +22,20 @@ logger = logging.getLogger(__name__)
 async def login(
     request: Request,
     db: Annotated[AsyncSession, Depends(deps.get_db)],
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> Any:
     """
     OAuth2 compatible token login.
-    
+
     This endpoint receives username and password in form data format
     (required by OAuth2 spec) and returns a JWT access token.
-    
+
     Flow:
     1. Receive credentials from client
     2. Authenticate user (check password)
     3. Generate JWT token
     4. Return token to client
-    
+
     The client then includes this token in subsequent requests:
     Authorization: Bearer <token>
     """
@@ -46,17 +46,18 @@ async def login(
     )
 
     if not user:
-        logger.warning(f"Failed login attempt for: {form_data.username} - Invalid credentials")
+        logger.warning(
+            f"Failed login attempt for: {form_data.username} - Invalid credentials"
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password"
+            detail="Incorrect email or password",
         )
 
     if not user.is_active:
         logger.warning(f"Failed login attempt for user ID {user.id} - Account inactive")
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user"
         )
 
     # Create access token with user ID as subject
@@ -66,19 +67,16 @@ async def login(
     )
 
     logger.info(f"Successful login for user ID: {user.id} ({user.email})")
-    return {
-        "access_token": access_token,
-        "token_type": "bearer"
-    }
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 @router.post("/test-token", response_model=User)
 async def test_token(
-    current_user: Annotated[User, Depends(deps.get_current_user)]
+    current_user: Annotated[User, Depends(deps.get_current_user)],
 ) -> Any:
     """
     Test endpoint to verify JWT token works.
-    
+
     This is useful during development to verify your token is valid.
     Just hit this endpoint with a token and if you get your user data back,
     the token is working correctly.
