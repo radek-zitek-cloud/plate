@@ -1,4 +1,5 @@
 import asyncio
+import os
 import sys
 from pathlib import Path
 from typing import AsyncGenerator
@@ -16,8 +17,11 @@ from app.core.database import Base
 from app.main import app
 from app.api.deps import get_db
 
-# Use test database URL
-TEST_DATABASE_URL = "postgresql+asyncpg://test_user:test_password@localhost:5433/test_db"
+# Use test database URL from environment or default to localhost
+TEST_DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql+asyncpg://test_user:test_password@localhost:5433/test_db"
+)
 
 # Create test engine with proper pool settings
 test_engine = create_async_engine(
