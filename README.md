@@ -244,6 +244,19 @@ docker compose -f docker-compose.prod.yml build
 - **Make** - Task automation
 - **Nginx** - Web server (production)
 
+## Documentation
+
+All project documentation is located in the [`docs/`](./docs) directory:
+
+- **[docs/README.md](./docs/README.md)** - Documentation index and navigation guide
+- **[docs/CLAUDE.md](./docs/CLAUDE.md)** - Comprehensive development guide and architecture
+- **[docs/CHANGELOG.md](./docs/CHANGELOG.md)** - Complete project history and changes
+- **[docs/FRONTEND_TESTING.md](./docs/FRONTEND_TESTING.md)** - Frontend testing guide
+- **[docs/BACKEND_TESTING.md](./docs/BACKEND_TESTING.md)** - Backend testing guide
+- **[docs/Environment-Architecture.md](./docs/Environment-Architecture.md)** - Infrastructure and deployment
+
+See [docs/README.md](./docs/README.md) for the complete documentation index.
+
 ## License
 
 MIT

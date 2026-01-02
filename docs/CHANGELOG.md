@@ -31,6 +31,36 @@ Changes that MUST be documented:
 
 ## [Unreleased]
 
+### Changed - 2026-01-02
+
+#### Documentation Consolidation
+- **Consolidated all documentation to docs/ directory**:
+  - Moved `CLAUDE.md` → `docs/CLAUDE.md`
+  - Moved `frontend/TESTING.md` → `docs/FRONTEND_TESTING.md`
+  - Moved `frontend/README.md` → `docs/FRONTEND.md`
+  - Moved `backend/TEST_SUITE_SUMMARY.md` → `docs/BACKEND_TESTING.md`
+  - Created `docs/README.md` as documentation index
+  - Updated all documentation references in CHANGELOG.md
+  - Main `README.md` remains in project root (standard practice)
+
+- **Documentation Structure**:
+  ```
+  docs/
+  ├── README.md                    # Documentation index (NEW)
+  ├── CLAUDE.md                    # AI assistant guide (MOVED from root)
+  ├── CHANGELOG.md                 # Change history (already here)
+  ├── Environment-Architecture.md  # Infrastructure guide (already here)
+  ├── FRONTEND.md                  # Frontend guide (MOVED from frontend/)
+  ├── FRONTEND_TESTING.md          # Frontend testing (MOVED from frontend/)
+  └── BACKEND_TESTING.md           # Backend testing (MOVED from backend/)
+  ```
+
+- **Benefits**:
+  - Single source of truth for all documentation
+  - Easier to find and maintain documentation
+  - Clear organization and navigation via docs/README.md
+  - Consistent with standard project structure
+
 ### Added - 2026-01-02
 
 #### Comprehensive Codebase Improvements (Phases 1-6)
@@ -165,7 +195,7 @@ Changes that MUST be documented:
 
 **Phase 6: Documentation**
 
-- **Security Documentation** (Added to `CLAUDE.md`):
+- **Security Documentation** (Added to `docs/CLAUDE.md`):
   - Comprehensive security section (lines 361-503)
   - Password validation requirements and implementation
   - JWT token structure and authentication flow
@@ -394,7 +424,7 @@ Changes that MUST be documented:
 - **Testing**: Reorganized frontend tests, added 53 new tests, added coverage tools
 - **UX**: Added error handler utility, 404 page, password visibility toggles, logout confirmation
 - **CI/CD**: Created comprehensive GitHub Actions pipeline
-- **Documentation**: Added extensive security section to CLAUDE.md, updated CHANGELOG.md
+- **Documentation**: Added extensive security section to docs/CLAUDE.md, updated CHANGELOG.md
 
 **Breaking Changes**: None - all changes are backward compatible
 
@@ -465,7 +495,7 @@ Changes that MUST be documented:
     - Proper state management
 
 - **Documentation**:
-  - `frontend/TESTING.md`: Comprehensive testing guide
+  - `docs/FRONTEND_TESTING.md`: Comprehensive testing guide
     - Best practices and patterns
     - Mock strategies (API mocks, localStorage, context)
     - Example test patterns for forms, async operations, navigation
@@ -630,7 +660,7 @@ Changes that MUST be documented:
   - `npm run test:ui`: Launch interactive test UI
   - `npm run test:coverage`: Generate coverage report
 
-- **Testing Documentation** (`frontend/TESTING.md`):
+- **Testing Documentation** (`docs/FRONTEND_TESTING.md`):
   - Complete testing architecture guide
   - Best practices and patterns
   - Examples for forms, errors, navigation
@@ -753,7 +783,7 @@ Changes that MUST be documented:
   - Performs full rebuild of all Docker images without cache
   - Stops services, rebuilds with `--no-cache`, and restarts
   - Recommended command for dependency changes and base image updates
-  - Added to help menu and documented in CLAUDE.md
+  - Added to help menu and documented in docs/CLAUDE.md
 
 #### Database Migrations
 - **Automatic migrations on startup**: Implemented automatic database migration execution
@@ -780,7 +810,7 @@ Changes that MUST be documented:
   - Must run in container to access postgres hostname in Docker network
 
 #### Documentation
-- **CLAUDE.md**: Created comprehensive documentation for Claude Code instances working in this repository
+- **docs/CLAUDE.md**: Created comprehensive documentation for Claude Code instances working in this repository
   - Project overview and architecture patterns
   - Essential development commands (make targets, docker compose, uv)
   - Detailed architecture explanation (dependency injection, CRUD patterns, async database, JWT auth)
@@ -789,31 +819,31 @@ Changes that MUST be documented:
   - Docker workflow and rebuilding instructions
   - VSCode integration guidance
 
-- **Documentation Requirements**: Established strict documentation rules in CLAUDE.md
+- **Documentation Requirements**: Established strict documentation rules in docs/CLAUDE.md
   - Required documentation for all significant changes
   - Guidelines on what, where, and when to document
   - Emphasis on architecture decisions, breaking changes, and gotchas
   - **docs/CHANGELOG.md** marked as REQUIRED location for recording all changes
 
-- **CHANGELOG.md**: Created changelog file following Keep a Changelog format
+- **docs/CHANGELOG.md**: Created changelog file following Keep a Changelog format
   - Records all notable changes with dates
   - Tracks added features, changes, and important notes
   - Must be updated with every significant change (strict requirement)
-  - Added "How to Update the Changelog" section to CLAUDE.md with clear instructions and example
+  - Added "How to Update the Changelog" section to docs/CLAUDE.md with clear instructions and example
 
 - **backend/.dockerignore**: Created Docker ignore file to prevent build issues
   - Excludes .venv, __pycache__, .env, and other local files from Docker builds
   - Critical for preventing "no such file or directory" errors with Python virtual environments
-  - Documented importance in CLAUDE.md Docker Development Workflow section
+  - Documented importance in docs/CLAUDE.md Docker Development Workflow section
 
 #### Standards Established
 - **Docker Compose V2**: Project standardized on `docker compose` (with space) instead of legacy `docker-compose` (hyphen)
   - Updated all documentation to reflect this standard
-  - Added prominent warnings in CLAUDE.md
+  - Added prominent warnings in docs/CLAUDE.md
   - Makefile already uses correct syntax
 
 ### Changed - 2026-01-01
-- Updated Makefile documentation references in CLAUDE.md to match actual targets (removed non-existent `rebuild` target, added `test` and `test-watch`)
+- Updated Makefile documentation references in docs/CLAUDE.md to match actual targets (removed non-existent `rebuild` target, added `test` and `test-watch`)
 - Corrected docker-compose.yml reference to docker-compose.yaml (actual filename)
 
 ### Notes
