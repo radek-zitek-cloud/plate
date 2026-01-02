@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { updateProfile, changePassword } from '../api/auth';
-import { getErrorMessage } from '../utils/errorHandler';
+import { getErrorMessage, type ApiError } from '../utils/errorHandler';
 import './Profile.css';
 
 export function Profile() {
@@ -39,7 +39,7 @@ export function Profile() {
       setUser(updatedUser);
       setMessage('Profile updated successfully!');
     } catch (err) {
-      setError(getErrorMessage(err, 'Failed to update profile'));
+      setError(getErrorMessage(err as ApiError, 'Failed to update profile'));
     } finally {
       setLoading(false);
     }
@@ -76,7 +76,7 @@ export function Profile() {
         confirm_password: '',
       });
     } catch (err) {
-      setError(getErrorMessage(err, 'Failed to change password'));
+      setError(getErrorMessage(err as ApiError, 'Failed to change password'));
     } finally {
       setLoading(false);
     }

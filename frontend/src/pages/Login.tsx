@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getErrorMessage } from '../utils/errorHandler';
+import { getErrorMessage, type ApiError } from '../utils/errorHandler';
 import './Auth.css';
 
 const Login: React.FC = () => {
@@ -22,7 +22,7 @@ const Login: React.FC = () => {
       await login(username, password);
       navigate('/dashboard');
     } catch (err) {
-      setError(getErrorMessage(err, 'Login failed. Please try again.'));
+      setError(getErrorMessage(err as ApiError, 'Login failed. Please try again.'));
     } finally {
       setLoading(false);
     }
