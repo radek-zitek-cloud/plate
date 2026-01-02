@@ -36,7 +36,7 @@ const Signup: React.FC = () => {
     try {
       await signup(email, username, password, fullName || undefined);
       navigate('/dashboard');
-    } catch (err: any) {
+    } catch (err) {
       setError(getErrorMessage(err, 'Signup failed. Please try again.'));
     } finally {
       setLoading(false);

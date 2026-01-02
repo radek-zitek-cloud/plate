@@ -37,7 +37,7 @@ window.confirm = vi.fn(() => true);
 // Mock console.error to reduce noise in tests
 const originalError = console.error;
 beforeAll(() => {
-  console.error = (...args: any[]) => {
+  console.error = (...args: unknown[]) => {
     if (
       typeof args[0] === 'string' &&
       (args[0].includes('Not implemented: HTMLFormElement.prototype.submit') ||

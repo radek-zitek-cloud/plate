@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { authApi, type User } from '../api/auth';
 
@@ -35,7 +36,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
           const userData = await authApi.testToken();
           setUser(userData);
-        } catch (error) {
+        } catch {
           localStorage.removeItem('token');
         }
       }
@@ -53,7 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signup = async (email: string, username: string, password: string, fullName?: string) => {
-    const userData = await authApi.signup({
+    await authApi.signup({
       email,
       username,
       password,

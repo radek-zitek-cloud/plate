@@ -38,7 +38,7 @@ export function Profile() {
       });
       setUser(updatedUser);
       setMessage('Profile updated successfully!');
-    } catch (err: any) {
+    } catch (err) {
       setError(getErrorMessage(err, 'Failed to update profile'));
     } finally {
       setLoading(false);
@@ -75,7 +75,7 @@ export function Profile() {
         new_password: '',
         confirm_password: '',
       });
-    } catch (err: any) {
+    } catch (err) {
       setError(getErrorMessage(err, 'Failed to change password'));
     } finally {
       setLoading(false);
