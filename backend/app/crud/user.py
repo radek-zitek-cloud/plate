@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union, Dict, Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -56,11 +56,14 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         await db.refresh(db_obj)
         return db_obj
 
-    async def update(self, db: AsyncSession, db_obj: User, obj_in: UserUpdate) -> User:
+    async def update(self, db: AsyncSession, db_obj: User, obj_in: Union[UserUpdate, Dict[str, Any]]) -> User:
         """
         Override update to handle password hashing if password is being updated.
         """
-        update_data = obj_in.model_dump(exclude_unset=True)
+        if isinstance(obj_in, dict):
+            update_data = obj_in
+        else:
+            update_data = obj_in.model_dump(exclude_unset=True)
 
         # If password is being updated, validate and hash it
         if "password" in update_data:

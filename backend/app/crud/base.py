@@ -42,7 +42,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         This is the generic "retrieve" operation. It works for any model
         because we're using self.model which was passed during initialization.
         """
-        result = await db.execute(select(self.model).where(self.model.id == id))
+        result = await db.execute(select(self.model).where(self.model.id == id))  # type: ignore[attr-defined]
         return result.scalar_one_or_none()
 
     async def get_multi(

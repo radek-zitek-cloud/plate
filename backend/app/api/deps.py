@@ -63,7 +63,7 @@ async def get_current_user(
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
-        user_id: str = payload.get("sub")
+        user_id: str | None = payload.get("sub")
         if user_id is None:
             raise credentials_exception
         token_data = TokenPayload(sub=user_id)
@@ -71,6 +71,8 @@ async def get_current_user(
         raise credentials_exception
 
     # Get the user from database
+    # We know token_data.sub is not None because we checked user_id above
+    assert token_data.sub is not None
     user = await crud.user.get(db, id=int(token_data.sub))
     if not user:
         raise credentials_exception
