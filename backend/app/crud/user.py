@@ -56,7 +56,9 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         await db.refresh(db_obj)
         return db_obj
 
-    async def update(self, db: AsyncSession, db_obj: User, obj_in: Union[UserUpdate, Dict[str, Any]]) -> User:
+    async def update(
+        self, db: AsyncSession, db_obj: User, obj_in: Union[UserUpdate, Dict[str, Any]]
+    ) -> User:
         """
         Override update to handle password hashing if password is being updated.
         """
