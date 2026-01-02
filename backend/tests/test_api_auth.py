@@ -20,7 +20,7 @@ class TestLogin:
         user_in = UserCreate(
             email="login@example.com",
             username="loginuser",
-            password="correctpassword",
+            password="CorrectPassword1",
             is_active=True
         )
         await crud.user.create(db_session, obj_in=user_in)
@@ -30,7 +30,7 @@ class TestLogin:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "login@example.com",  # OAuth2 uses 'username' field for email
-                "password": "correctpassword"
+                "password": "CorrectPassword1"
             }
         )
         
@@ -47,7 +47,7 @@ class TestLogin:
         user_in = UserCreate(
             email="wrongpw@example.com",
             username="wrongpwuser",
-            password="correctpassword"
+            password="CorrectPassword1"
         )
         await crud.user.create(db_session, obj_in=user_in)
         
@@ -56,7 +56,7 @@ class TestLogin:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "wrongpw@example.com",
-                "password": "wrongpassword"
+                "password": "WrongPassword1"
             }
         )
         
@@ -70,7 +70,7 @@ class TestLogin:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "nonexistent@example.com",
-                "password": "anypassword"
+                "password": "AnyPassword1"
             }
         )
         
@@ -84,7 +84,7 @@ class TestLogin:
         user_in = UserCreate(
             email="inactive@example.com",
             username="inactiveuser",
-            password="password123",
+            password="Password123",
             is_active=False
         )
         await crud.user.create(db_session, obj_in=user_in)
@@ -94,7 +94,7 @@ class TestLogin:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "inactive@example.com",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         
@@ -107,7 +107,7 @@ class TestLogin:
         response = await client.post(
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
-                "password": "password123"
+                "password": "Password123"
             }
         )
         
@@ -149,7 +149,7 @@ class TestTestToken:
         user_in = UserCreate(
             email="tokentest@example.com",
             username="tokentestuser",
-            password="password123"
+            password="Password123"
         )
         created_user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -158,7 +158,7 @@ class TestTestToken:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "tokentest@example.com",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         token = login_response.json()["access_token"]
@@ -213,7 +213,7 @@ class TestTestToken:
         user_in = UserCreate(
             email="deleteme@example.com",
             username="deletemeuser",
-            password="password123"
+            password="Password123"
         )
         created_user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -222,7 +222,7 @@ class TestTestToken:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "deleteme@example.com",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         token = login_response.json()["access_token"]
@@ -252,7 +252,7 @@ class TestAuthenticationFlow:
             json={
                 "email": "fullflow@example.com",
                 "username": "fullflowuser",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         assert signup_response.status_code == 200
@@ -262,7 +262,7 @@ class TestAuthenticationFlow:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "fullflow@example.com",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         assert login_response.status_code == 200
@@ -283,7 +283,7 @@ class TestAuthenticationFlow:
         user_in = UserCreate(
             email="reuse@example.com",
             username="reuseuser",
-            password="password123"
+            password="Password123"
         )
         await crud.user.create(db_session, obj_in=user_in)
         
@@ -291,7 +291,7 @@ class TestAuthenticationFlow:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "reuse@example.com",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         token = login_response.json()["access_token"]
@@ -312,7 +312,7 @@ class TestAuthenticationFlow:
         user_in = UserCreate(
             email="multilogin@example.com",
             username="multiloginuser",
-            password="password123"
+            password="Password123"
         )
         await crud.user.create(db_session, obj_in=user_in)
         
@@ -323,7 +323,7 @@ class TestAuthenticationFlow:
                 f"{settings.API_V1_PREFIX}/auth/login",
                 data={
                     "username": "multilogin@example.com",
-                    "password": "password123"
+                    "password": "Password123"
                 }
             )
             tokens.append(response.json()["access_token"])

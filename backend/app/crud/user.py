@@ -6,6 +6,7 @@ from app.crud.base import CRUDBase
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
 from app.core.security import get_password_hash, verify_password
+from app.core.password_validator import validate_password_or_raise
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
@@ -39,13 +40,17 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     async def create(self, db: AsyncSession, obj_in: UserCreate) -> User:
         """
         Override the base create method to handle password hashing.
-        
+
         This is why we have user-specific CRUD - User creation needs
         special handling that other models don't need.
         """
+        # Validate password strength before creating user
+        validate_password_or_raise(obj_in.password)
+
         db_obj = User(
             email=obj_in.email,
             username=obj_in.username,
+            full_name=obj_in.full_name,
             hashed_password=get_password_hash(obj_in.password),  # Hash the password
             is_active=obj_in.is_active,
             is_superuser=obj_in.is_superuser,
@@ -62,13 +67,14 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         Override update to handle password hashing if password is being updated.
         """
         update_data = obj_in.model_dump(exclude_unset=True)
-        
-        # If password is being updated, hash it
+
+        # If password is being updated, validate and hash it
         if "password" in update_data:
+            validate_password_or_raise(update_data["password"])
             hashed_password = get_password_hash(update_data["password"])
             del update_data["password"]
             update_data["hashed_password"] = hashed_password
-        
+
         # Use parent class's update logic for the rest
         return await super().update(db, db_obj=db_obj, obj_in=update_data)
 

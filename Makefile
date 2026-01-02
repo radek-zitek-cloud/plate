@@ -2,7 +2,7 @@
 
 help:
 	@echo "Available commands:"
-	@echo "  make dev          - Start development environment"
+	@echo "  make dev          - Start development environment (backend + frontend)"
 	@echo "  make down         - Stop all services"
 	@echo "  make rebuild      - Rebuild all images without cache and restart"
 	@echo "  make test         - Run tests in test environment"
@@ -16,6 +16,7 @@ dev:
 	docker compose up -d
 	@echo ""
 	@echo "Development environment started!"
+	@echo "Frontend: http://localhost:5173"
 	@echo "Backend API: http://localhost:8000"
 	@echo "API Docs: http://localhost:8000/api/v1/docs"
 
@@ -53,5 +54,6 @@ rebuild:
 	docker compose up -d
 	@echo ""
 	@echo "Rebuild complete!"
+	@echo "Frontend: http://localhost:5173"
 	@echo "Backend API: http://localhost:8000"
 	@echo "API Docs: http://localhost:8000/api/v1/docs"

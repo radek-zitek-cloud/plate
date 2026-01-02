@@ -4,6 +4,9 @@ import sys
 from pathlib import Path
 from typing import AsyncGenerator
 
+# Set testing mode to disable rate limiting
+os.environ["TESTING"] = "True"
+
 # Add the backend directory to Python path
 backend_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(backend_dir))

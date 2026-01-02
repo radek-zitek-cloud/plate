@@ -15,6 +15,11 @@ venv/
 # Alembic
 alembic/versions/*.pyc
 
+# Node / Frontend
+node_modules/
+dist/
+*.local
+
 # IDEs
 .vscode/
 .idea/

@@ -1,14 +1,16 @@
 import logging
 import subprocess
-import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 from app.api.v1.api import api_router
 from app.core.config import settings
+from app.core.rate_limit import limiter
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -67,6 +69,10 @@ app = FastAPI(
     redoc_url=f"{settings.API_V1_PREFIX}/redoc",  # ReDoc
     lifespan=lifespan,
 )
+
+# Configure rate limiting
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Configure CORS
 app.add_middleware(

@@ -5,6 +5,7 @@ from app.schemas.user import (
     UserInDB,
     Token,
     TokenPayload,
+    PasswordChange,
 )
 
 __all__ = [
@@ -14,4 +15,5 @@ __all__ = [
     "UserInDB",
     "Token",
     "TokenPayload",
+    "PasswordChange",
 ]

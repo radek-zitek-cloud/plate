@@ -1,13 +1,17 @@
+import logging
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import crud, schemas
 from app.api import deps
 from app.models.user import User
+from app.core.password_validator import PasswordValidationError
+from app.core.rate_limit import limiter
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.get("/me", response_model=schemas.User)
@@ -38,14 +42,67 @@ async def update_user_me(
     Update current user.
     
     Users can update their own information. The user_in schema defines
-    what fields can be updated (email, username, password, etc.).
+    what fields can be updated (email, username, full_name, etc.).
+    Note: For password changes, use the dedicated /me/password endpoint.
     """
+    # Check if email is being changed and already exists
+    if user_in.email and user_in.email != current_user.email:
+        existing_user = await crud.user.get_by_email(db, email=user_in.email)
+        if existing_user:
+            raise HTTPException(
+                status_code=400,
+                detail="A user with this email already exists"
+            )
+    
+    # Check if username is being changed and already exists
+    if user_in.username and user_in.username != current_user.username:
+        existing_user = await crud.user.get_by_username(db, username=user_in.username)
+        if existing_user:
+            raise HTTPException(
+                status_code=400,
+                detail="A user with this username already exists"
+            )
+    
     user = await crud.user.update(db, db_obj=current_user, obj_in=user_in)
+    logger.info(f"User profile updated for user ID: {current_user.id}")
     return user
 
 
+@router.post("/me/password")
+async def change_password(
+    password_change: schemas.PasswordChange,
+    current_user: Annotated[User, Depends(deps.get_current_active_user)],
+    db: Annotated[AsyncSession, Depends(deps.get_db)]
+) -> Any:
+    """
+    Change current user's password.
+    
+    Requires the current password for verification before setting new password.
+    This provides an extra layer of security.
+    """
+    from app.core.security import verify_password
+    
+    # Verify current password
+    if not verify_password(password_change.current_password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=400,
+            detail="Incorrect current password"
+        )
+    
+    # Update password
+    try:
+        user_update = schemas.UserUpdate(password=password_change.new_password)
+        await crud.user.update(db, db_obj=current_user, obj_in=user_update)
+        logger.info(f"Password changed for user ID: {current_user.id}")
+        return {"message": "Password updated successfully"}
+    except PasswordValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 @router.post("/signup", response_model=schemas.User)
+@limiter.limit("3/hour")
 async def create_user_signup(
+    request: Request,
     user_in: schemas.UserCreate,
     db: Annotated[AsyncSession, Depends(deps.get_db)]
 ) -> Any:
@@ -78,8 +135,12 @@ async def create_user_signup(
         )
     
     # Create new user
-    user = await crud.user.create(db, obj_in=user_in)
-    return user
+    try:
+        user = await crud.user.create(db, obj_in=user_in)
+        logger.info(f"New user created: {user.email} (ID: {user.id})")
+        return user
+    except PasswordValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.get("/{user_id}", response_model=schemas.User)

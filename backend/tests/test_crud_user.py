@@ -18,7 +18,7 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="test@example.com",
             username="testuser",
-            password="testpassword123",
+            password="TestPassword123",
             is_active=True,
             is_superuser=False
         )
@@ -31,8 +31,8 @@ class TestCRUDUser:
         assert user.is_superuser is False
         assert hasattr(user, "id")
         assert hasattr(user, "hashed_password")
-        assert user.hashed_password != "testpassword123"  # Should be hashed
-        assert verify_password("testpassword123", user.hashed_password)
+        assert user.hashed_password != "TestPassword123"  # Should be hashed
+        assert verify_password("TestPassword123", user.hashed_password)
     
     @pytest.mark.asyncio
     async def test_get_user(self, db_session: AsyncSession):
@@ -41,7 +41,7 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="get@example.com",
             username="getuser",
-            password="password123"
+            password="Password123"
         )
         created_user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -65,7 +65,7 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="email@example.com",
             username="emailuser",
-            password="password123"
+            password="Password123"
         )
         created_user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -87,7 +87,7 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="username@example.com",
             username="uniqueusername",
-            password="password123"
+            password="Password123"
         )
         created_user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -110,7 +110,7 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="update@example.com",
             username="updateuser",
-            password="oldpassword"
+            password="OldPassword1"
         )
         user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -132,18 +132,18 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="password@example.com",
             username="passworduser",
-            password="oldpassword"
+            password="OldPassword1"
         )
         user = await crud.user.create(db_session, obj_in=user_in)
         old_hashed_password = user.hashed_password
         
         # Update password
-        user_update = UserUpdate(password="newpassword123")
+        user_update = UserUpdate(password="NewPassword123")
         updated_user = await crud.user.update(db_session, db_obj=user, obj_in=user_update)
         
         assert updated_user.hashed_password != old_hashed_password
-        assert verify_password("newpassword123", updated_user.hashed_password)
-        assert not verify_password("oldpassword", updated_user.hashed_password)
+        assert verify_password("NewPassword123", updated_user.hashed_password)
+        assert not verify_password("OldPassword1", updated_user.hashed_password)
     
     @pytest.mark.asyncio
     async def test_update_user_partial(self, db_session: AsyncSession):
@@ -152,7 +152,7 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="partial@example.com",
             username="partialuser",
-            password="password123"
+            password="Password123"
         )
         user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -170,7 +170,7 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="delete@example.com",
             username="deleteuser",
-            password="password123"
+            password="Password123"
         )
         user = await crud.user.create(db_session, obj_in=user_in)
         user_id = user.id
@@ -192,7 +192,7 @@ class TestCRUDUser:
             user_in = UserCreate(
                 email=f"user{i}@example.com",
                 username=f"user{i}",
-                password="password123"
+                password="Password123"
             )
             await crud.user.create(db_session, obj_in=user_in)
         
@@ -209,7 +209,7 @@ class TestCRUDUser:
             user_in = UserCreate(
                 email=f"page{i}@example.com",
                 username=f"page{i}",
-                password="password123"
+                password="Password123"
             )
             await crud.user.create(db_session, obj_in=user_in)
         
@@ -233,13 +233,13 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="auth@example.com",
             username="authuser",
-            password="correctpassword"
+            password="CorrectPassword1"
         )
         await crud.user.create(db_session, obj_in=user_in)
         
         # Authenticate
         authenticated_user = await crud.user.authenticate(
-            db_session, email="auth@example.com", password="correctpassword"
+            db_session, email="auth@example.com", password="CorrectPassword1"
         )
         
         assert authenticated_user is not None
@@ -252,13 +252,13 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="wrongpw@example.com",
             username="wrongpwuser",
-            password="correctpassword"
+            password="CorrectPassword1"
         )
         await crud.user.create(db_session, obj_in=user_in)
         
         # Try to authenticate with wrong password
         authenticated_user = await crud.user.authenticate(
-            db_session, email="wrongpw@example.com", password="wrongpassword"
+            db_session, email="wrongpw@example.com", password="WrongPassword1"
         )
         
         assert authenticated_user is None
@@ -267,7 +267,7 @@ class TestCRUDUser:
     async def test_authenticate_user_nonexistent_email(self, db_session: AsyncSession):
         """Test authentication with non-existent email."""
         authenticated_user = await crud.user.authenticate(
-            db_session, email="nonexistent@example.com", password="password"
+            db_session, email="nonexistent@example.com", password="Password1"
         )
         
         assert authenticated_user is None
@@ -279,7 +279,7 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="active@example.com",
             username="activeuser",
-            password="password123",
+            password="Password123",
             is_active=True
         )
         active_user = await crud.user.create(db_session, obj_in=user_in)
@@ -290,7 +290,7 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="inactive@example.com",
             username="inactiveuser",
-            password="password123",
+            password="Password123",
             is_active=False
         )
         inactive_user = await crud.user.create(db_session, obj_in=user_in)
@@ -304,7 +304,7 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="regular@example.com",
             username="regularuser",
-            password="password123",
+            password="Password123",
             is_superuser=False
         )
         regular_user = await crud.user.create(db_session, obj_in=user_in)
@@ -315,7 +315,7 @@ class TestCRUDUser:
         user_in = UserCreate(
             email="super@example.com",
             username="superuser",
-            password="password123",
+            password="Password123",
             is_superuser=True
         )
         super_user = await crud.user.create(db_session, obj_in=user_in)

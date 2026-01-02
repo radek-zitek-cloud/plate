@@ -6,7 +6,7 @@ from app.core.config import settings
 # Create async engine
 engine = create_async_engine(
     settings.DATABASE_URL,
-    echo=True,  # Set to False in production
+    echo=settings.SQL_ECHO,
     future=True,
 )
 
@@ -23,16 +23,3 @@ AsyncSessionLocal = async_sessionmaker(
 # Base class for models
 class Base(DeclarativeBase):
     pass
-
-
-# Dependency for FastAPI
-async def get_db():
-    async with AsyncSessionLocal() as session:
-        try:
-            yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()
-            raise
-        finally:
-            await session.close()

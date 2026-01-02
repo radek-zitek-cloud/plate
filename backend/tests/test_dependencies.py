@@ -22,7 +22,7 @@ class TestDependencies:
         user_in = UserCreate(
             email="dbtest@example.com",
             username="dbtestuser",
-            password="password123"
+            password="Password123"
         )
         user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -36,7 +36,7 @@ class TestDependencies:
         user_in = UserCreate(
             email="oauth@example.com",
             username="oauthuser",
-            password="password123"
+            password="Password123"
         )
         await crud.user.create(db_session, obj_in=user_in)
         
@@ -44,7 +44,7 @@ class TestDependencies:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "oauth@example.com",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         token = login_response.json()["access_token"]
@@ -64,7 +64,7 @@ class TestDependencies:
         user_in = UserCreate(
             email="current@example.com",
             username="currentuser",
-            password="password123"
+            password="Password123"
         )
         created_user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -100,7 +100,7 @@ class TestDependencies:
         user_in = UserCreate(
             email="deleted@example.com",
             username="deleteduser",
-            password="password123"
+            password="Password123"
         )
         user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -144,7 +144,7 @@ class TestDependencies:
         user_in = UserCreate(
             email="active@example.com",
             username="activeuser",
-            password="password123",
+            password="Password123",
             is_active=True
         )
         await crud.user.create(db_session, obj_in=user_in)
@@ -154,7 +154,7 @@ class TestDependencies:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "active@example.com",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         token = login_response.json()["access_token"]
@@ -176,7 +176,7 @@ class TestDependencies:
         user_in = UserCreate(
             email="inactive@example.com",
             username="inactiveuser",
-            password="password123",
+            password="Password123",
             is_active=False
         )
         user = await crud.user.create(db_session, obj_in=user_in)
@@ -202,7 +202,7 @@ class TestDependencies:
         user_in = UserCreate(
             email="super@example.com",
             username="superuser",
-            password="password123",
+            password="Password123",
             is_superuser=True
         )
         await crud.user.create(db_session, obj_in=user_in)
@@ -212,7 +212,7 @@ class TestDependencies:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "super@example.com",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         token = login_response.json()["access_token"]
@@ -234,7 +234,7 @@ class TestDependencies:
         user_in = UserCreate(
             email="normal@example.com",
             username="normaluser",
-            password="password123",
+            password="Password123",
             is_superuser=False
         )
         await crud.user.create(db_session, obj_in=user_in)
@@ -244,7 +244,7 @@ class TestDependencies:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "normal@example.com",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         token = login_response.json()["access_token"]
@@ -270,7 +270,7 @@ class TestDependencies:
         user_in = UserCreate(
             email="chain@example.com",
             username="chainuser",
-            password="password123"
+            password="Password123"
         )
         await crud.user.create(db_session, obj_in=user_in)
         
@@ -279,7 +279,7 @@ class TestDependencies:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "chain@example.com",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         token = login_response.json()["access_token"]

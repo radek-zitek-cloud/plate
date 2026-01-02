@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any
 from jose import jwt
@@ -8,14 +9,20 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def create_access_token(subject: str | Any, expires_delta: timedelta | None = None) -> str:
+    now = datetime.now(timezone.utc)
     if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
+        expire = now + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(
+        expire = now + timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
-    
-    to_encode = {"exp": expire, "sub": str(subject)}
+
+    to_encode = {
+        "exp": expire,
+        "iat": now,  # Issued at timestamp
+        "sub": str(subject),
+        "jti": str(uuid.uuid4())  # JWT ID for token tracking/revocation
+    }
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 

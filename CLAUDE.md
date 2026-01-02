@@ -10,7 +10,13 @@ FastAPI backend boilerplate with PostgreSQL, Redis, and Docker-based development
 
 ## Documentation Requirements
 
-**STRICT RULE**: All significant changes, decisions, and additions to the codebase MUST be documented. This is not optional.
+**⚠️ STRICT RULE: THIS IS NON-NEGOTIABLE ⚠️**
+
+**ALL SIGNIFICANT CHANGES, DECISIONS, AND ADDITIONS TO THE CODEBASE MUST BE DOCUMENTED.**
+
+**Failure to maintain documentation, especially the CHANGELOG, is a violation of project standards.**
+
+Every developer, AI assistant (including Claude), and contributor working on this project is **REQUIRED** to document their work. This is not a suggestion—it is a mandatory part of completing any task.
 
 ### What to Document
 
@@ -21,10 +27,13 @@ FastAPI backend boilerplate with PostgreSQL, Redis, and Docker-based development
 5. **Database schema changes**: New models, migrations, or structural changes
 6. **API changes**: New endpoints, modified responses, or authentication changes
 7. **Gotchas and workarounds**: Non-obvious solutions to problems
+8. **Bug fixes**: What was broken, root cause, and how it was fixed
+9. **Dependency updates**: New or updated packages and why
+10. **Infrastructure changes**: Docker, deployment, or environment modifications
 
 ### Where to Document
 
-- **docs/CHANGELOG.md**: ALL changes must be recorded here with date and clear description (REQUIRED)
+- **docs/CHANGELOG.md**: ⚠️ **MANDATORY** - ALL changes MUST be recorded here with date and clear description
 - **This file (CLAUDE.md)**: For changes to development workflow, architecture patterns, or critical information future developers need
 - **docs/ directory**: For detailed technical documentation, architecture decisions, guides
 - **Code comments**: For complex logic that isn't self-evident
@@ -32,9 +41,11 @@ FastAPI backend boilerplate with PostgreSQL, Redis, and Docker-based development
 
 ### When to Update Documentation
 
+- **Before considering work complete**: Documentation is PART of the work, not optional
 - **Before committing**: Update relevant docs in the same commit as code changes
 - **After architectural decisions**: Document why you chose an approach
 - **When adding complexity**: If it needs explanation, document it immediately
+- **When fixing bugs**: Document what was wrong and how it was fixed
 
 ### How to Update the Changelog
 
@@ -346,6 +357,149 @@ docker compose exec backend alembic downgrade -1
 - **Dependencies**: Both `asyncpg` (for FastAPI) and `psycopg2-binary` (for Alembic) are installed
 - **Migration files**: Located in `backend/alembic/versions/`
 - **Production**: Migrations run automatically via the lifespan context manager before application starts accepting requests
+
+## Security
+
+This application implements multiple layers of security for authentication, data protection, and abuse prevention.
+
+### Password Security
+
+**Password Validation**: All passwords must meet the following requirements (enforced in `app/core/password_validator.py`):
+- Minimum 8 characters in length
+- At least one uppercase letter (A-Z)
+- At least one lowercase letter (a-z)
+- At least one number (0-9)
+
+The `validate_password_or_raise()` function is called in:
+- User creation (`crud.user.create()`)
+- User updates when password is changed (`crud.user.update()`)
+- Signup endpoint (`POST /api/v1/users/signup`)
+
+Invalid passwords return a 400 error with specific validation messages.
+
+**Password Hashing**: Passwords are hashed using bcrypt via passlib with the following settings:
+- Algorithm: bcrypt
+- Automatic salt generation
+- One-way hashing (passwords cannot be decrypted)
+
+Never store or log plaintext passwords.
+
+### Authentication & JWT Tokens
+
+**JWT Token Structure**: Access tokens include the following claims:
+- `exp`: Expiration timestamp (default: 30 minutes from issuance)
+- `iat`: Issued at timestamp (when token was created)
+- `sub`: Subject (user ID)
+- `jti`: JWT ID (unique identifier for token tracking/revocation)
+
+The `iat` and `jti` claims enable future features like token revocation and refresh token rotation.
+
+**Token Configuration**:
+- Algorithm: HS256
+- Secret key: Configured via `SECRET_KEY` environment variable (use `openssl rand -hex 32`)
+- Expiration: Configured via `ACCESS_TOKEN_EXPIRE_MINUTES` (default: 30)
+
+**Authentication Flow**:
+1. User submits credentials via `POST /api/v1/auth/login`
+2. Password verified against bcrypt hash
+3. JWT token generated and returned
+4. Client includes token in `Authorization: Bearer <token>` header
+5. Protected endpoints verify token via `get_current_user()` dependency
+
+### Rate Limiting
+
+Rate limiting is implemented using slowapi to prevent brute force attacks and abuse.
+
+**Configuration** (`app/core/rate_limit.py`):
+- Library: slowapi
+- Key function: Remote IP address (`get_remote_address`)
+- Disabled during testing: `enabled=not settings.TESTING`
+
+**Current Limits**:
+- Login endpoint: 5 requests per minute per IP (`POST /api/v1/auth/login`)
+- Signup endpoint: 3 requests per hour per IP (`POST /api/v1/users/signup`)
+
+**Testing Note**: Rate limiting is automatically disabled when `TESTING=True` in environment variables to prevent test failures.
+
+To modify rate limits, update the `@limiter.limit()` decorators in endpoint files:
+```python
+@router.post("/login")
+@limiter.limit("5/minute")  # Adjust as needed
+async def login(request: Request, ...):
+    ...
+```
+
+### Logging
+
+Comprehensive logging is implemented for security-relevant events:
+
+**Logged Events** (in `app/api/v1/endpoints/auth.py` and `app/api/v1/endpoints/users.py`):
+- Login attempts (username/email)
+- Successful logins (user ID)
+- Failed login attempts
+- User creation (email, user ID)
+- Profile updates (user ID)
+- Password changes (user ID)
+
+All logs use Python's standard `logging` module. Configure log level via environment or update logging config in `app/main.py`.
+
+**Security Best Practices for Logging**:
+- Never log passwords (plaintext or hashed)
+- Log user IDs, not sensitive PII when possible
+- Include timestamps (automatic with logging module)
+- Monitor failed login attempts for suspicious patterns
+
+### Error Handling
+
+**Backend**: API errors return appropriate HTTP status codes with error details in the response body:
+- 400: Bad Request (validation errors, weak passwords)
+- 401: Unauthorized (invalid/missing token)
+- 403: Forbidden (insufficient permissions)
+- 404: Not Found (user/resource doesn't exist)
+- 409: Conflict (duplicate email/username)
+- 500: Internal Server Error (unhandled exceptions)
+
+**Frontend**: Centralized error handling via `src/utils/errorHandler.ts`:
+```typescript
+import { getErrorMessage } from '../utils/errorHandler';
+
+try {
+  await apiCall();
+} catch (err: any) {
+  setError(getErrorMessage(err, 'Operation failed'));
+}
+```
+
+This utility extracts error messages from FastAPI responses (handles both string and array detail formats) and provides user-friendly fallback messages.
+
+### Database Security
+
+**SQL Injection Prevention**: SQLAlchemy ORM and parameterized queries prevent SQL injection. Never concatenate user input into raw SQL queries.
+
+**Timezone-Aware Timestamps**: All datetime columns use `DateTime(timezone=True)` with UTC timestamps to prevent timezone-related security issues and ensure consistent time comparisons.
+
+**Connection Security**: Database connections use environment variables (`DATABASE_URL`) and should use SSL in production.
+
+### Frontend Security Considerations
+
+**XSS Protection**: React escapes values by default. Never use `dangerouslySetInnerHTML` unless absolutely necessary and input is sanitized.
+
+**Token Storage**: Currently tokens are stored in localStorage (see `src/context/AuthContext.tsx`). Be aware:
+- localStorage is vulnerable to XSS attacks
+- Consider httpOnly cookies for production
+- Implement token refresh for long-lived sessions
+
+**CORS Configuration**: CORS origins are configured in `app/main.py`. In production, restrict to specific domains (never use `allow_origins=["*"]` in production).
+
+### Testing Security Features
+
+When writing tests for security features:
+- Set `TESTING=True` to disable rate limiting
+- Use strong passwords in test fixtures (min 8 chars, uppercase, lowercase, number)
+- Test both successful and failed authentication flows
+- Verify error messages don't leak sensitive information
+
+Example test password: `TestPassword123`
 
 ## VSCode Integration
 

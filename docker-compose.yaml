@@ -107,6 +107,26 @@ services:
       - backend_network
     restart: unless-stopped
 
+  # Development frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: frontend_dev
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+      - ./frontend/.env.development:/app/.env.development
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    networks:
+      - backend_network
+    restart: unless-stopped
+
   # Test backend
   backend_test:
     profiles: ["test"]

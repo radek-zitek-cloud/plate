@@ -14,7 +14,7 @@ from app.core.config import settings
 def user_data_factory(
     email: str = "test@example.com",
     username: str = "testuser",
-    password: str = "testpassword123",
+    password: str = "TestPassword123",  # Updated to meet validation requirements
     is_active: bool = True,
     is_superuser: bool = False
 ) -> dict:
@@ -33,7 +33,7 @@ async def create_test_user(
     db: AsyncSession,
     email: str = "test@example.com",
     username: str = "testuser",
-    password: str = "testpassword123",
+    password: str = "TestPassword123",  # Updated to meet validation requirements
     is_active: bool = True,
     is_superuser: bool = False
 ):

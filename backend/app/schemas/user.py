@@ -6,6 +6,7 @@ from datetime import datetime
 class UserBase(BaseModel):
     email: EmailStr
     username: str
+    full_name: str | None = None
     is_active: bool = True
     is_superuser: bool = False
 
@@ -19,6 +20,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     email: EmailStr | None = None
     username: str | None = None
+    full_name: str | None = None
     password: str | None = None
     is_active: bool | None = None
 
@@ -51,3 +53,9 @@ class Token(BaseModel):
 class TokenPayload(BaseModel):
     """Data structure of JWT token payload."""
     sub: str | None = None  # subject - typically user ID
+
+
+class PasswordChange(BaseModel):
+    """Schema for password change request."""
+    current_password: str
+    new_password: str

@@ -16,7 +16,7 @@ async def normal_user_token(client: AsyncClient, db_session: AsyncSession) -> st
     user_in = UserCreate(
         email="normaluser@example.com",
         username="normaluser",
-        password="password123",
+        password="Password123",
         is_active=True,
         is_superuser=False
     )
@@ -26,7 +26,7 @@ async def normal_user_token(client: AsyncClient, db_session: AsyncSession) -> st
         f"{settings.API_V1_PREFIX}/auth/login",
         data={
             "username": "normaluser@example.com",
-            "password": "password123"
+            "password": "Password123"
         }
     )
     return response.json()["access_token"]
@@ -38,7 +38,7 @@ async def superuser_token(client: AsyncClient, db_session: AsyncSession) -> str:
     user_in = UserCreate(
         email="superuser@example.com",
         username="superuser",
-        password="password123",
+        password="Password123",
         is_active=True,
         is_superuser=True
     )
@@ -48,7 +48,7 @@ async def superuser_token(client: AsyncClient, db_session: AsyncSession) -> str:
         f"{settings.API_V1_PREFIX}/auth/login",
         data={
             "username": "superuser@example.com",
-            "password": "password123"
+            "password": "Password123"
         }
     )
     return response.json()["access_token"]
@@ -65,7 +65,7 @@ class TestUserSignup:
             json={
                 "email": "newsignup@example.com",
                 "username": "newsignupuser",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         
@@ -86,7 +86,7 @@ class TestUserSignup:
         user_in = UserCreate(
             email="duplicate@example.com",
             username="firstuser",
-            password="password123"
+            password="Password123"
         )
         await crud.user.create(db_session, obj_in=user_in)
         
@@ -96,7 +96,7 @@ class TestUserSignup:
             json={
                 "email": "duplicate@example.com",
                 "username": "seconduser",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         
@@ -110,7 +110,7 @@ class TestUserSignup:
         user_in = UserCreate(
             email="first@example.com",
             username="duplicateuser",
-            password="password123"
+            password="Password123"
         )
         await crud.user.create(db_session, obj_in=user_in)
         
@@ -120,7 +120,7 @@ class TestUserSignup:
             json={
                 "email": "second@example.com",
                 "username": "duplicateuser",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         
@@ -135,7 +135,7 @@ class TestUserSignup:
             json={
                 "email": "notanemail",
                 "username": "testuser",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         
@@ -156,7 +156,7 @@ class TestUserSignup:
     
     @pytest.mark.asyncio
     async def test_signup_short_password(self, client: AsyncClient):
-        """Test signup with very short password (should still work, no validation)."""
+        """Test signup with very short password (should fail validation)."""
         response = await client.post(
             f"{settings.API_V1_PREFIX}/users/signup",
             json={
@@ -165,10 +165,10 @@ class TestUserSignup:
                 "password": "12"
             }
         )
-        
-        # Current implementation has no password length validation
-        # This test documents current behavior
-        assert response.status_code == 200
+
+        # Password validation requires min 8 chars, uppercase, lowercase, number
+        assert response.status_code == 400
+        assert "Password must" in response.json()["detail"]
 
 
 class TestReadUserMe:
@@ -239,7 +239,7 @@ class TestUpdateUserMe:
         user_in = UserCreate(
             email="changepw@example.com",
             username="changepwuser",
-            password="oldpassword"
+            password="OldPassword1"
         )
         await crud.user.create(db_session, obj_in=user_in)
         
@@ -247,7 +247,7 @@ class TestUpdateUserMe:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "changepw@example.com",
-                "password": "oldpassword"
+                "password": "OldPassword1"
             }
         )
         token = login_response.json()["access_token"]
@@ -257,7 +257,7 @@ class TestUpdateUserMe:
             f"{settings.API_V1_PREFIX}/users/me",
             headers={"Authorization": f"Bearer {token}"},
             json={
-                "password": "newpassword123"
+                "password": "NewPassword123"
             }
         )
         
@@ -268,7 +268,7 @@ class TestUpdateUserMe:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "changepw@example.com",
-                "password": "oldpassword"
+                "password": "OldPassword1"
             }
         )
         assert old_login.status_code == 401
@@ -278,7 +278,7 @@ class TestUpdateUserMe:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "changepw@example.com",
-                "password": "newpassword123"
+                "password": "NewPassword123"
             }
         )
         assert new_login.status_code == 200
@@ -308,7 +308,7 @@ class TestReadUserById:
         user_in = UserCreate(
             email="otheruser@example.com",
             username="otheruser",
-            password="password123"
+            password="Password123"
         )
         other_user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -341,7 +341,7 @@ class TestReadUserById:
         user_in = UserCreate(
             email="test@example.com",
             username="testuser",
-            password="password123"
+            password="Password123"
         )
         user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -365,7 +365,7 @@ class TestReadUsers:
             user_in = UserCreate(
                 email=f"listuser{i}@example.com",
                 username=f"listuser{i}",
-                password="password123"
+                password="Password123"
             )
             await crud.user.create(db_session, obj_in=user_in)
         
@@ -389,7 +389,7 @@ class TestReadUsers:
             user_in = UserCreate(
                 email=f"page{i}@example.com",
                 username=f"page{i}",
-                password="password123"
+                password="Password123"
             )
             await crud.user.create(db_session, obj_in=user_in)
         
@@ -444,7 +444,7 @@ class TestDeleteUser:
         user_in = UserCreate(
             email="deleteme@example.com",
             username="deletemeuser",
-            password="password123"
+            password="Password123"
         )
         user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -484,7 +484,7 @@ class TestDeleteUser:
         user_in = UserCreate(
             email="cantdelete@example.com",
             username="cantdeleteuser",
-            password="password123"
+            password="Password123"
         )
         user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -502,7 +502,7 @@ class TestDeleteUser:
         user_in = UserCreate(
             email="test@example.com",
             username="testuser",
-            password="password123"
+            password="Password123"
         )
         user = await crud.user.create(db_session, obj_in=user_in)
         
@@ -525,7 +525,7 @@ class TestUserPermissions:
         user_in = UserCreate(
             email="inactive@example.com",
             username="inactiveuser",
-            password="password123",
+            password="Password123",
             is_active=False
         )
         await crud.user.create(db_session, obj_in=user_in)
@@ -535,7 +535,7 @@ class TestUserPermissions:
             f"{settings.API_V1_PREFIX}/auth/login",
             data={
                 "username": "inactive@example.com",
-                "password": "password123"
+                "password": "Password123"
             }
         )
         assert login_response.status_code == 400
