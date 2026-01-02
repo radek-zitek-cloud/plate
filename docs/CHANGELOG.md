@@ -472,6 +472,15 @@ Changes that MUST be documented:
     - Debugging tips
     - CI/CD integration guidance
 
+- **Makefile Integration**:
+  - `make test`: Run all tests (backend + frontend)
+  - `make test-backend`: Run only backend tests in isolated environment
+  - `make test-frontend`: Run only frontend tests
+  - `make test-watch`: Run backend tests in watch mode
+  - `make test-frontend-watch`: Run frontend tests in watch mode
+  - `make test-frontend-ui`: Interactive test UI at http://localhost:51204
+  - `make test-frontend-coverage`: Generate frontend coverage report
+
 #### Frontend Application
 - **React TypeScript Frontend**: Built complete authentication frontend using Vite 7.3.0
   - React 18 with TypeScript for type safety

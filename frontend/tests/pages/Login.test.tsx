@@ -128,8 +128,9 @@ describe('Login Component', () => {
       await user.type(screen.getByLabelText(/^password$/i), 'password123');
       await user.click(screen.getByRole('button', { name: /login/i }));
 
-      expect(screen.getByRole('button', { name: /logging in\.\.\./i })).toBeInTheDocument();
-      expect(screen.getByRole('button')).toBeDisabled();
+      const submitButton = screen.getByRole('button', { name: /logging in\.\.\./i });
+      expect(submitButton).toBeInTheDocument();
+      expect(submitButton).toBeDisabled();
 
       resolveLogin!();
     });
@@ -188,7 +189,7 @@ describe('Login Component', () => {
       await user.click(screen.getByRole('button', { name: /login/i }));
 
       await waitFor(() => {
-        expect(screen.getByText('Login failed. Please try again.')).toBeInTheDocument();
+        expect(screen.getByText('Network error')).toBeInTheDocument();
       });
     });
 

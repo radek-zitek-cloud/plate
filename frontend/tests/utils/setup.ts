@@ -31,6 +31,9 @@ Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
 
+// Mock window.confirm (returns true by default)
+window.confirm = vi.fn(() => true);
+
 // Mock console.error to reduce noise in tests
 const originalError = console.error;
 beforeAll(() => {

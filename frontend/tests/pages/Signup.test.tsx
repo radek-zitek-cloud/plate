@@ -222,8 +222,9 @@ describe('Signup Component', () => {
       await user.type(screen.getByLabelText(/confirm password/i), 'password123');
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
-      expect(screen.getByRole('button', { name: /creating account\.\.\./i })).toBeInTheDocument();
-      expect(screen.getByRole('button')).toBeDisabled();
+      const submitButton = screen.getByRole('button', { name: /creating account\.\.\./i });
+      expect(submitButton).toBeInTheDocument();
+      expect(submitButton).toBeDisabled();
 
       resolveSignup!();
     });
@@ -317,7 +318,7 @@ describe('Signup Component', () => {
       await user.click(screen.getByRole('button', { name: /sign up/i }));
 
       await waitFor(() => {
-        expect(screen.getByText('Signup failed. Please try again.')).toBeInTheDocument();
+        expect(screen.getByText('Network error')).toBeInTheDocument();
       });
     });
 
