@@ -6,6 +6,9 @@ ARG VERSION=0.0.0
 
 WORKDIR /app
 
+# Set VERSION as environment variable for build
+ENV VERSION=${VERSION}
+
 # Copy package files
 COPY package*.json ./
 
