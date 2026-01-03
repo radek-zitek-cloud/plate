@@ -142,7 +142,9 @@ services:
       SECRET_KEY: test-secret-key-not-for-production
       TESTING: "true"
     volumes:
-      - ./backend:/app
+      # Mount only source directories for testing
+      # This preserves .venv from the Docker build
+      - ./backend/app:/app/app
       - ./backend/alembic:/app/alembic
       - ./backend/tests:/app/tests
     depends_on:
