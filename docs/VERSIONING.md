@@ -37,9 +37,25 @@ The `VERSION` file at the project root is the single source of truth for the app
 
 ### Docker Images
 
-Production Docker images are tagged with the version:
+The project uses separate Dockerfiles for development and production:
+
+**Production Dockerfiles** (`Dockerfile`):
+- Multi-stage builds for optimized image size
+- Accept `VERSION` build argument
+- Tagged with semantic version and `latest`
+- Include OCI image labels with version metadata
 - Backend: `registry/backend:0.1.0` and `registry/backend:latest`
 - Frontend: `registry/frontend:0.1.0` and `registry/frontend:latest`
+
+**Development Dockerfiles** (`Dockerfile.dev`):
+- Single-stage builds for faster rebuilds
+- Accept `VERSION` build argument (for consistency)
+- Enable hot-reload for local development
+- Include version labels for tracking
+
+**docker-compose Files**:
+- `docker-compose.yaml` - Uses `Dockerfile.dev` for development/testing
+- `docker-compose.prod.yaml` - Uses `Dockerfile` for production builds
 
 ## Bumping Versions
 
@@ -143,6 +159,80 @@ VERSION=0.1.0 docker compose -f docker-compose.prod.yaml build
 # Run production stack
 VERSION=0.1.0 docker compose -f docker-compose.prod.yaml up -d
 ```
+
+## Docker Configuration Details
+
+### Dockerfile Structure
+
+**Backend Production (`backend/Dockerfile`)**:
+- Multi-stage build for minimal image size
+- Accepts `VERSION` build arg in both stages
+- Adds OCI labels with version metadata
+- Uses slim Python image for production
+- Includes health check
+- Non-root user for security
+
+**Frontend Production (`frontend/Dockerfile`)**:
+- Multi-stage build (Node.js builder + nginx)
+- Accepts `VERSION` build arg and passes to vite via ENV
+- Frontend reads `VERSION` env var during build (vite.config.ts)
+- Final image is nginx-alpine with built static assets
+- Includes OCI labels with version metadata
+
+**Development Dockerfiles** (`Dockerfile.dev`):
+- Single-stage for fast rebuilds
+- Accept `VERSION` build arg for consistency
+- Include volume mounts for hot-reload
+- Backend uses uvicorn with `--reload`
+- Frontend runs vite dev server
+
+### Version Injection
+
+**Backend**:
+- Runtime: Reads `VERSION` file via `backend/app/core/config.py`
+- Build: Receives VERSION as build arg for OCI labels only
+- File must be present in Docker context
+
+**Frontend**:
+- Build time: VERSION injected via environment variable in Dockerfile
+- Vite reads from `process.env.VERSION` or falls back to VERSION file
+- Build arg → ENV → vite.config.ts → `__APP_VERSION__` global constant
+
+### docker-compose Configuration
+
+**Development (`docker-compose.yaml`)**:
+```yaml
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+      args:
+        VERSION: ${VERSION:-0.0.0}  # Optional in dev
+```
+
+**Production (`docker-compose.prod.yaml`)**:
+```yaml
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${VERSION:-0.0.0}  # Required for proper tagging
+    image: ${DOCKER_REGISTRY:-localhost}/backend:${VERSION:-latest}
+```
+
+### .dockerignore Files
+
+Both backend and frontend have `.dockerignore` files to exclude:
+- `node_modules/` (frontend)
+- `.venv/` (backend)
+- `.git/`, `.env` files
+- Build artifacts, test coverage
+- IDE files
+
+This ensures clean Docker builds and prevents host-specific paths from breaking container builds.
 
 ## Version Workflow Example
 

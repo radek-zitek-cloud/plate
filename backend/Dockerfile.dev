@@ -1,6 +1,14 @@
 # Use Python 3.12 on Debian bookworm
 FROM python:3.12-trixie
 
+# Accept version as build argument (optional for dev)
+ARG VERSION=0.0.0
+
+# Add version metadata to the image
+LABEL org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.title="Backend API (Development)" \
+      org.opencontainers.image.description="FastAPI backend service - development build"
+
 # Set working directory
 WORKDIR /app
 

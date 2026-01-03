@@ -84,6 +84,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
+      args:
+        VERSION: ${VERSION:-0.0.0}
     container_name: backend_api_dev
     env_file:
       # Load infrastructure config first, then application config
@@ -112,6 +114,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
+      args:
+        VERSION: ${VERSION:-0.0.0}
     container_name: frontend_dev
     volumes:
       - ./frontend/src:/app/src
@@ -134,6 +138,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
+      args:
+        VERSION: ${VERSION:-0.0.0}
     container_name: backend_api_test
     environment:
       # Override environment variables for test
@@ -163,6 +169,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
+      args:
+        VERSION: ${VERSION:-0.0.0}
     container_name: frontend_test
     volumes:
       - ./frontend/src:/app/src
