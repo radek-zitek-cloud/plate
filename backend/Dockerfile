@@ -1,6 +1,9 @@
 # Stage 1: Build stage with all build dependencies
 FROM python:3.12-trixie AS builder
 
+# Accept version as build argument
+ARG VERSION=0.0.0
+
 WORKDIR /app
 
 # Install uv
@@ -16,7 +19,15 @@ RUN uv sync --frozen --no-dev
 # Stage 2: Runtime stage with minimal footprint
 FROM python:3.12-slim-trixie
 
+# Accept version as build argument in final stage
+ARG VERSION=0.0.0
+
 WORKDIR /app
+
+# Add version metadata to the image
+LABEL org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.title="Backend API" \
+      org.opencontainers.image.description="FastAPI backend service"
 
 # Create a non-root user for security
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
@@ -47,4 +58,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Because .venv/bin is in PATH, this finds uvicorn from the virtual environment
 # Railway sets PORT env var, default to 8000 for local testing
 # Workers can be overridden with WORKERS env var (default 4)
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers ${WORKERS:-4}
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}", "--workers", "${WORKERS:-4}"]

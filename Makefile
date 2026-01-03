@@ -1,10 +1,14 @@
-.PHONY: help dev down test test-backend test-frontend test-watch test-frontend-watch test-frontend-ui test-frontend-coverage lint lint-backend lint-frontend format format-backend format-frontend logs shell-backend shell-db clean rebuild
+.PHONY: help dev down test test-backend test-frontend test-watch test-frontend-watch test-frontend-ui test-frontend-coverage lint lint-backend lint-frontend format format-backend format-frontend logs shell-backend shell-db clean rebuild version version-bump-patch version-bump-minor version-bump-major release release-push build-prod
 
 help:
 	@echo "Available commands:"
+	@echo ""
+	@echo "Development:"
 	@echo "  make dev                    - Start development environment (backend + frontend)"
 	@echo "  make down                   - Stop all services"
 	@echo "  make rebuild                - Rebuild all images without cache and restart"
+	@echo ""
+	@echo "Testing:"
 	@echo "  make test                   - Run all tests (backend + frontend)"
 	@echo "  make test-backend           - Run backend tests in test environment"
 	@echo "  make test-frontend          - Run frontend tests"
@@ -12,12 +16,24 @@ help:
 	@echo "  make test-frontend-watch    - Run frontend tests in watch mode"
 	@echo "  make test-frontend-ui       - Run frontend tests with interactive UI"
 	@echo "  make test-frontend-coverage - Run frontend tests with coverage report"
+	@echo ""
+	@echo "Code Quality:"
 	@echo "  make lint                   - Run all linters (backend + frontend)"
 	@echo "  make lint-backend           - Run ruff linter on backend code"
 	@echo "  make lint-frontend          - Run eslint on frontend code"
 	@echo "  make format                 - Format all code (backend + frontend)"
 	@echo "  make format-backend         - Format backend code with ruff"
 	@echo "  make format-frontend        - Format frontend code with eslint"
+	@echo ""
+	@echo "Version Management:"
+	@echo "  make version                - Show current version"
+	@echo "  make version-bump-patch     - Bump patch version (0.1.0 -> 0.1.1)"
+	@echo "  make version-bump-minor     - Bump minor version (0.1.0 -> 0.2.0)"
+	@echo "  make version-bump-major     - Bump major version (0.1.0 -> 1.0.0)"
+	@echo "  make release                - Create git tag for current version"
+	@echo "  make build-prod             - Build production Docker images with version tags"
+	@echo ""
+	@echo "Utilities:"
 	@echo "  make logs                   - View development logs"
 	@echo "  make shell-backend          - Open shell in dev backend container"
 	@echo "  make shell-db               - Open PostgreSQL shell (dev)"
@@ -142,3 +158,25 @@ rebuild:
 	@echo "Frontend: http://localhost:5173"
 	@echo "Backend API: http://localhost:8000"
 	@echo "API Docs: http://localhost:8000/api/v1/docs"
+
+# Version management targets
+version:
+	@echo "Current version: $$(cat VERSION)"
+
+version-bump-patch:
+	@./scripts/version-bump.sh patch
+
+version-bump-minor:
+	@./scripts/version-bump.sh minor
+
+version-bump-major:
+	@./scripts/version-bump.sh major
+
+release:
+	@./scripts/release.sh
+
+release-push:
+	@./scripts/release.sh --push
+
+build-prod:
+	@./scripts/build-images.sh

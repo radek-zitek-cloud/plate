@@ -1,11 +1,22 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
+from pathlib import Path
+
+
+def _read_version() -> str:
+    """Read version from VERSION file at project root."""
+    version_file = Path(__file__).resolve().parent.parent.parent / "VERSION"
+    try:
+        return version_file.read_text().strip()
+    except Exception:
+        # Fallback version if VERSION file doesn't exist
+        return "0.0.0"
 
 
 class Settings(BaseSettings):
     # App
     PROJECT_NAME: str = "Backend API"
-    VERSION: str = "0.1.0"
+    VERSION: str = _read_version()
     API_V1_PREFIX: str = "/api/v1"
     TESTING: bool = False  # Set to True to disable rate limiting during tests
 
