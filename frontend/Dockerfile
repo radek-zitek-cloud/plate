@@ -3,7 +3,7 @@ FROM node:24-alpine AS builder
 
 # Accept build arguments
 ARG VERSION=0.0.0
-ARG VITE_API_URL=http://localhost:8000
+ARG VITE_API_URL
 
 WORKDIR /app
 
