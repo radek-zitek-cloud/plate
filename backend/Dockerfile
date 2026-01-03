@@ -58,4 +58,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Because .venv/bin is in PATH, this finds uvicorn from the virtual environment
 # Railway sets PORT env var, default to 8000 for local testing
 # Workers can be overridden with WORKERS env var (default 4)
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}", "--workers", "${WORKERS:-4}"]
+# Use shell form to enable variable substitution
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers ${WORKERS:-4}
