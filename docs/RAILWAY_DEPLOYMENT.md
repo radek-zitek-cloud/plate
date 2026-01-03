@@ -117,7 +117,15 @@ Railway automatically handles:
    VITE_API_URL=https://your-backend.up.railway.app
    ```
 
-   **Important**: Get the backend URL from the backend service's Settings → Networking → Public Domain.
+   **CRITICAL**:
+   - This MUST be set as a **build-time variable** (not runtime)
+   - Railway needs to pass this as a build argument to Docker
+   - In Railway, go to: Service Settings → Build → Build Arguments
+   - Add: `VITE_API_URL=https://your-backend.up.railway.app`
+   - Get the backend URL from the backend service's Settings → Networking → Public Domain
+   - Without this, the frontend will try to connect to `localhost:8000` and fail
+
+   **Note**: Vite bakes environment variables into the build at build time, so changing this requires a rebuild.
 
 4. **Configure Build**:
    - The Dockerfile handles the build automatically
@@ -275,16 +283,33 @@ Set up alerts in Railway dashboard:
 railway logs --service backend
 ```
 
-### Frontend shows blank page
+### Frontend shows blank page or "Connection Refused" errors
 
-**Check**:
+**Symptoms**:
+- Browser console shows: `Failed to load resource: net::ERR_CONNECTION_REFUSED`
+- Requests going to `localhost:8000` instead of Railway backend URL
+
+**Root Cause**: `VITE_API_URL` was not set as a build argument
+
+**Fix**:
+1. Go to Railway dashboard → Frontend service
+2. Settings → Build → Build Arguments (or Variables → Build Variables)
+3. Add: `VITE_API_URL=https://your-backend.up.railway.app`
+4. Replace `your-backend.up.railway.app` with your actual backend URL
+5. Trigger a rebuild (Settings → Redeploy or push a commit)
+
+**Verify**:
+- Check browser console network tab
+- API requests should go to `https://your-backend.up.railway.app/api/v1/...`
+- Not `localhost:8000`
+
+**Additional checks**:
 - `VITE_API_URL` is set correctly (build-time variable!)
 - Backend URL is correct and accessible
 - Build completed successfully
-- Browser console for errors
-- CORS is configured on backend
+- CORS is configured on backend with frontend domain
 
-**Rebuild frontend**:
+**Manual rebuild**:
 ```bash
 railway service  # Select frontend
 railway up --detach  # Force rebuild

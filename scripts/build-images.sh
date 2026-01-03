@@ -2,7 +2,7 @@
 
 # Docker image build script with version tagging
 # Builds production Docker images with proper version tags
-# Usage: ./scripts/build-images.sh [--push] [--registry REGISTRY]
+# Usage: ./scripts/build-images.sh [--push] [--registry REGISTRY] [--api-url API_URL]
 
 set -euo pipefail
 
@@ -31,6 +31,7 @@ echo ""
 # Parse command line arguments
 PUSH=false
 REGISTRY="localhost"
+VITE_API_URL="http://localhost:8000"
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -42,9 +43,13 @@ while [[ $# -gt 0 ]]; do
             REGISTRY="$2"
             shift 2
             ;;
+        --api-url)
+            VITE_API_URL="$2"
+            shift 2
+            ;;
         *)
             echo -e "${RED}Error: Unknown argument $1${NC}"
-            echo "Usage: $0 [--push] [--registry REGISTRY]"
+            echo "Usage: $0 [--push] [--registry REGISTRY] [--api-url API_URL]"
             exit 1
             ;;
     esac
@@ -67,8 +72,10 @@ echo ""
 
 # Build frontend image
 echo -e "${YELLOW}Building frontend image...${NC}"
+echo -e "${BLUE}Using API URL: $VITE_API_URL${NC}"
 docker build \
     --build-arg VERSION="$VERSION" \
+    --build-arg VITE_API_URL="$VITE_API_URL" \
     -t "$REGISTRY/frontend:$VERSION" \
     -t "$REGISTRY/frontend:latest" \
     -f "$PROJECT_ROOT/frontend/Dockerfile" \

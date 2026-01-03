@@ -1,13 +1,16 @@
 # Build stage
 FROM node:24-alpine AS builder
 
-# Accept version as build argument
+# Accept build arguments
 ARG VERSION=0.0.0
+ARG VITE_API_URL=http://localhost:8000
 
 WORKDIR /app
 
-# Set VERSION as environment variable for build
+# Set environment variables for build
+# Vite will read these during the build process
 ENV VERSION=${VERSION}
+ENV VITE_API_URL=${VITE_API_URL}
 
 # Copy package files
 COPY package*.json ./
@@ -19,6 +22,7 @@ RUN npm ci
 COPY . .
 
 # Build the application
+# Vite bakes VITE_* env vars into the build
 RUN npm run build
 
 # Production stage

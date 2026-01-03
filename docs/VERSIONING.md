@@ -148,13 +148,22 @@ make build-prod
 
 # Build and push to registry
 ./scripts/build-images.sh --push --registry your-registry.com
+
+# Build with custom API URL for frontend
+./scripts/build-images.sh --api-url https://api.yourdomain.com
+
+# Full example with all options
+./scripts/build-images.sh --push --registry ghcr.io/yourorg --api-url https://api.yourdomain.com
 ```
 
 ### Using Docker Compose
 
 ```bash
-# Build production images
+# Build production images with version
 VERSION=0.1.0 docker compose -f docker-compose.prod.yaml build
+
+# Build with custom frontend API URL
+VERSION=0.1.0 VITE_API_URL=https://api.yourdomain.com docker compose -f docker-compose.prod.yaml build
 
 # Run production stack
 VERSION=0.1.0 docker compose -f docker-compose.prod.yaml up -d
@@ -197,6 +206,10 @@ VERSION=0.1.0 docker compose -f docker-compose.prod.yaml up -d
 - Build time: VERSION injected via environment variable in Dockerfile
 - Vite reads from `process.env.VERSION` or falls back to VERSION file
 - Build arg → ENV → vite.config.ts → `__APP_VERSION__` global constant
+- **VITE_API_URL**: Also requires build argument for production deployments
+  - Defaults to `http://localhost:8000` if not provided
+  - Railway/Production: Pass as build argument with backend URL
+  - Build arg → ENV → Vite bakes into compiled JavaScript
 
 ### docker-compose Configuration
 
@@ -219,8 +232,17 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       args:
-        VERSION: ${VERSION:-0.0.0}  # Required for proper tagging
+        VERSION: ${VERSION:-0.0.0}
     image: ${DOCKER_REGISTRY:-localhost}/backend:${VERSION:-latest}
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${VERSION:-0.0.0}
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    image: ${DOCKER_REGISTRY:-localhost}/frontend:${VERSION:-latest}
 ```
 
 ### .dockerignore Files
