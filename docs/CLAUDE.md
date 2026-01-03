@@ -229,10 +229,15 @@ backend/
 Settings are managed through `core/config.py` using `pydantic-settings`. Required environment variables:
 
 - `DATABASE_URL`: PostgreSQL connection string (e.g., `postgresql+asyncpg://user:pass@postgres:5432/db`)
+  - **Railway/Production**: Railway provides `postgres://...` or `postgresql://...` URLs
+  - **Automatic Conversion**: The `async_database_url` property automatically converts these to `postgresql+asyncpg://...` for async SQLAlchemy
+  - **Local Development**: Use `postgresql+asyncpg://...` format in `.env` files
 - `SECRET_KEY`: JWT signing key (use `openssl rand -hex 32` to generate)
 - `REDIS_URL`: Redis connection string (default: `redis://redis:6379`)
 
 Optional settings have defaults defined in the `Settings` class. Configuration is loaded from `backend/.env` which is gitignored.
+
+**Important**: All database access uses the `async_database_url` property which ensures compatibility with both Railway-provided URLs (sync format) and local development URLs (async format). The property automatically converts `postgres://` or `postgresql://` to `postgresql+asyncpg://` for async SQLAlchemy.
 
 ## Environment Architecture
 

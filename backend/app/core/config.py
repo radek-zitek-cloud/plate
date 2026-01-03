@@ -24,6 +24,27 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     SQL_ECHO: bool = False  # Set to True for SQL query debugging
 
+    @property
+    def async_database_url(self) -> str:
+        """
+        Convert DATABASE_URL to use asyncpg driver for async SQLAlchemy.
+
+        Railway and other platforms provide postgres:// or postgresql:// URLs,
+        but we need postgresql+asyncpg:// for async SQLAlchemy to work.
+        """
+        url = self.DATABASE_URL
+
+        # Replace postgres:// with postgresql+asyncpg://
+        if url.startswith("postgres://"):
+            return url.replace("postgres://", "postgresql+asyncpg://", 1)
+
+        # Replace postgresql:// with postgresql+asyncpg://
+        if url.startswith("postgresql://"):
+            return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+        # Already has a driver specified (e.g., postgresql+asyncpg://)
+        return url
+
     # Redis
     REDIS_URL: str = "redis://redis:6379"
 

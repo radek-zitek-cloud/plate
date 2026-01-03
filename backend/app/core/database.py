@@ -4,8 +4,10 @@ from app.core.config import settings
 
 
 # Create async engine
+# Use async_database_url property which converts postgres:// to postgresql+asyncpg://
+# This is necessary for Railway and other platforms that provide standard postgres URLs
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    settings.async_database_url,
     echo=settings.SQL_ECHO,
     future=True,
 )

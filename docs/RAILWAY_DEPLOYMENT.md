@@ -42,6 +42,8 @@ Railway automatically handles:
 3. Railway creates a PostgreSQL instance and provides a `DATABASE_URL`
 4. **Note**: The `DATABASE_URL` is automatically injected as an environment variable
 
+**Important**: Railway provides `DATABASE_URL` in the format `postgres://...` or `postgresql://...`, but the application automatically converts it to `postgresql+asyncpg://...` for async SQLAlchemy support. You don't need to modify the URL manually - the conversion happens automatically via the `async_database_url` property in `backend/app/core/config.py`.
+
 ### 3. Set Up Redis
 
 1. In your Railway project, click "+ New"

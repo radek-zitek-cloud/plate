@@ -40,8 +40,9 @@ target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""
-    # Use the DATABASE_URL from your settings, convert async to sync
-    url = settings.DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
+    # Use the async_database_url from settings, convert async to sync for Alembic
+    # async_database_url handles conversion of postgres:// to postgresql+asyncpg://
+    url = settings.async_database_url.replace("postgresql+asyncpg://", "postgresql://")
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -54,8 +55,9 @@ def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
     # Create engine from your settings, convert async to sync for Alembic
     configuration = config.get_section(config.config_ini_section)
-    # Replace asyncpg with psycopg2 (sync driver)
-    sync_url = settings.DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
+    # Use async_database_url and replace asyncpg with psycopg2 (sync driver)
+    # async_database_url handles conversion of postgres:// to postgresql+asyncpg://
+    sync_url = settings.async_database_url.replace("postgresql+asyncpg://", "postgresql://")
     configuration["sqlalchemy.url"] = sync_url
 
     connectable = engine_from_config(
