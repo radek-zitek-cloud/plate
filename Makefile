@@ -48,13 +48,12 @@ test:
 
 test-backend:
 	@echo "Running backend tests in isolated test environment..."
-	docker compose --profile test up --abort-on-container-exit --exit-code-from backend_test
+	docker compose --profile test up backend_test postgres_test redis_test --abort-on-container-exit --exit-code-from backend_test
 	docker compose --profile test down
 
 test-frontend:
-	@echo "Running frontend tests..."
-	@echo "Note: Requires 'make dev' to be running"
-	docker compose exec frontend npm test
+	@echo "Running frontend tests in isolated test environment..."
+	docker compose --profile test run --rm frontend_test
 
 test-frontend-watch:
 	@echo "Running frontend tests in watch mode..."

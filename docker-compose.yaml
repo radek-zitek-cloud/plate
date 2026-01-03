@@ -155,6 +155,27 @@ services:
     # Run tests and exit
     command: ["uv", "run", "pytest", "-v"]
 
+  # Test frontend
+  frontend_test:
+    profiles: ["test"]
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: frontend_test
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/tests:/app/tests
+      - ./frontend/public:/app/public
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+      - ./frontend/vitest.config.ts:/app/vitest.config.ts
+    environment:
+      - NODE_ENV=test
+    networks:
+      - test_network
+    # Run tests and exit
+    command: ["npm", "test"]
+
 volumes:
   postgres_data_dev:
     driver: local
