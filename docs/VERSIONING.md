@@ -91,11 +91,12 @@ The version bump script automatically updates:
 ### Using Make Commands (Recommended)
 
 ```bash
-# Create a git tag (local only)
-make release
-
-# Create and push git tag to remote
+# Option 1: Create and push git tag in one step
 make release-push
+
+# Option 2: Create tag locally first, then push separately
+make release        # Create tag locally
+make release-push   # Push existing tag to remote
 ```
 
 ### Using Scripts Directly
@@ -104,13 +105,14 @@ make release-push
 # Create git tag locally
 ./scripts/release.sh
 
-# Create and push git tag
+# Push existing tag (or create and push if tag doesn't exist)
 ./scripts/release.sh --push
 ```
 
 The release script:
 - Creates an annotated git tag (e.g., `v0.1.0`)
 - Optionally pushes the tag to the remote repository
+- If tag exists and --push flag is used, just pushes the existing tag
 - Requires no uncommitted changes
 
 ## Building Production Images
@@ -158,14 +160,18 @@ make version-bump-minor  # 0.1.0 -> 0.2.0
 git add -A
 git commit -m "chore: bump version to 0.2.0"
 
-# 4. Create and push release tag
+# 4a. Create and push release tag in one step
 make release-push
+
+# OR
+
+# 4b. Create tag locally first (to review), then push
+make release          # Creates local tag
+git push origin main  # Push commits first (optional)
+make release-push     # Push the tag
 
 # 5. Build and push Docker images (optional)
 ./scripts/build-images.sh --push --registry your-registry.com
-
-# 6. Push commits to remote
-git push origin main
 ```
 
 ## Version Information in Running Application

@@ -44,12 +44,29 @@ if ! git diff-index --quiet HEAD --; then
     exit 1
 fi
 
+# Check if --push flag is provided
+PUSH_FLAG="${1:-}"
+
 # Check if tag already exists
 if git rev-parse "$TAG" >/dev/null 2>&1; then
-    echo -e "${RED}Error: Tag $TAG already exists${NC}"
-    echo "If you want to create a new release, bump the version first:"
-    echo "  ./scripts/version-bump.sh [patch|minor|major]"
-    exit 1
+    # Tag exists - check if we're just trying to push it
+    if [ "$PUSH_FLAG" = "--push" ]; then
+        echo -e "${YELLOW}Tag $TAG already exists locally${NC}"
+        echo -e "${YELLOW}Pushing tag to remote...${NC}"
+        git push origin "$TAG"
+        echo -e "${GREEN}✓ Tag pushed to remote${NC}"
+        echo ""
+        echo -e "${GREEN}Release $VERSION complete!${NC}"
+        exit 0
+    else
+        echo -e "${RED}Error: Tag $TAG already exists${NC}"
+        echo "If you want to push the existing tag, run:"
+        echo "  ./scripts/release.sh --push"
+        echo ""
+        echo "If you want to create a new release, bump the version first:"
+        echo "  ./scripts/version-bump.sh [patch|minor|major]"
+        exit 1
+    fi
 fi
 
 # Create the tag
@@ -57,8 +74,6 @@ echo -e "${YELLOW}Creating git tag $TAG...${NC}"
 git tag -a "$TAG" -m "Release $VERSION"
 echo -e "${GREEN}✓ Tag $TAG created${NC}"
 
-# Check if --push flag is provided
-PUSH_FLAG="${1:-}"
 if [ "$PUSH_FLAG" = "--push" ]; then
     echo ""
     echo -e "${YELLOW}Pushing tag to remote...${NC}"
